@@ -1,6 +1,14 @@
 ## Run the application
 
-```air ```
+```
+make stop
+make start
+```
+
+- Live front-end
+```
+air
+```
 
 Stripe info
 
