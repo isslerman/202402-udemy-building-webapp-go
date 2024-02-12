@@ -28,7 +28,7 @@ build_back:
 	@echo "Back end built!"
 
 ## start: starts front and back end
-start: start_front start_back
+start: start_front start_back start_db
 	
 ## start_front: starts the front end
 start_front: build_front
@@ -36,6 +36,18 @@ start_front: build_front
 ##	@env STRIPE_KEY=${STRIPE_KEY} STRIPE_SECRET=${STRIPE_SECRET} ./dist/gostripe -port=${GOSTRIPE_PORT} -dsn="${DSN}" &
 	@env STRIPE_KEY=${STRIPE_KEY} STRIPE_SECRET=${STRIPE_SECRET} ./dist/gostripe -port=${GOSTRIPE_PORT} &
 	@echo "Front end running!"
+
+## start_db: starts the database
+start_db:
+	@echo "Starting the database"
+	docker-compose up -d
+	@echo "Database started"
+
+## stop_db: stops the database
+stop_db:
+	@echo "Stoping the database"
+	docker-compose down
+	@echo "Database stopped"
 
 ## start_back: starts the back end
 start_back: build_back
@@ -45,7 +57,7 @@ start_back: build_back
 	@echo "Back end running!"
 
 ## stop: stops the front and back end
-stop: stop_front stop_back
+stop: stop_front stop_back stop_db
 	@echo "All applications stopped"
 
 ## stop_front: stops the front end

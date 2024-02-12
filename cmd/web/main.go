@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/isslerman/202402-udemy-building-webapp-go/internal/driver"
 )
 
 // app version
@@ -66,6 +68,7 @@ func main() {
 	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application enviornment {development|production}")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
+	flag.StringVar(&cfg.db.dsn, "dsn", "user:password@tcp(localhost:3306)/widgets?parseTime=true&tls=false", "DSN")
 
 	flag.Parse()
 	// we are separating the strike config for security reasons. Not be accecible by like the others config.
@@ -75,6 +78,13 @@ func main() {
 	// setting the logs and the template cache
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	conn, err := driver.OpenDB(cfg.db.dsn)
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+	defer conn.Close()
+
 	tc := make(map[string]*template.Template)
 
 	app := &application{
@@ -85,7 +95,7 @@ func main() {
 		version:       version,
 	}
 
-	err := app.serve()
+	err = app.serve()
 	if err != nil {
 
 		app.errorLog.Println(err)
